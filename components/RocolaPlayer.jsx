@@ -7,19 +7,32 @@ export default function RocolaPlayer({ slug }) {
   const [nowPlaying, setNowPlaying] = useState(null);
   const [upNext, setUpNext] = useState([]);
 
-  async function fetchStatus() {
-    try {
-      const res = await fetch(`/api/rocola/${slug}/status`, { cache: "no-store" });
-      const data = await res.json();
+async function fetchStatus() {
+  try {
+    // 1) Spotify: canción actual
+    const res1 = await fetch(`/api/rocola/${slug}/status`, { cache: "no-store" });
+    const data1 = await res1.json();
+    setNowPlaying(data1.nowPlaying || null);
 
-      setNowPlaying(data.nowPlaying || null);
-      setUpNext(data.upNext || []);
-    } catch (err) {
-      console.error("Error fetching status:", err);
-    } finally {
-      setLoading(false);
-    }
+    // 2) Firebase: cola real
+    const res2 = await fetch(`/api/rocola/${slug}/queue`, { cache: "no-store" });
+    const data2 = await res2.json();
+    setUpNext(data2.queue || []);
+
+  } catch (err) {
+    console.error("Error fetching status:", err);
+  } finally {
+    setLoading(false);
   }
+}
+
+useEffect(() => {
+  const syncInterval = setInterval(async () => {
+    await fetch(`/api/rocola/${slug}/sync`);
+  }, 10000);
+
+  return () => clearInterval(syncInterval);
+}, [slug]);
 
   useEffect(() => {
     fetchStatus();

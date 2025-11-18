@@ -21,28 +21,28 @@ export default function RocolaForm({ slug }) {
     setFeedback(null);
 
     try {
-      const res = await fetch(`/api/rocola/${slug}/request-song`, {
+      const res = await fetch(`/api/rocola/${slug}/request`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
-          trackUri: selectedTrack.uri,
           trackId: selectedTrack.id,
-          trackName: selectedTrack.name,
-          artistName: selectedTrack.artist,
-          userName: name || null,
-          table: table || null,
+          name: selectedTrack.name,
+          artist: selectedTrack.artist,
+          image: selectedTrack.image,
+          mesa: table || null,
+          nombreCliente: name || null,
           couponCode: coupon || null,
         }),
       });
 
+      const data = await res.json();
+
       if (!res.ok) {
-        const text = await res.text();
-        setFeedback("Error: " + text);
+        setFeedback("Error: " + data.error);
       } else {
-        const data = await res.json();
-        setFeedback(
-          `🎉 ¡Listo! Tu canción se agregó. Precio final $${data.finalPrice}.`
-        );
+        setFeedback(`🎉 ¡Listo! Tu canción se agregó.`);
         setSelectedTrack(null);
         setName("");
         setTable("");
@@ -58,10 +58,9 @@ export default function RocolaForm({ slug }) {
 
   return (
     <section className="space-y-6">
-      {/* SEARCH COMPONENT */}
+
       <RocolaSearch slug={slug} onSelectTrack={setSelectedTrack} />
 
-      {/* SELECTED TRACK */}
       {selectedTrack && (
         <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl flex gap-3">
           {selectedTrack.image && (
@@ -74,7 +73,6 @@ export default function RocolaForm({ slug }) {
         </div>
       )}
 
-      {/* FORM */}
       <div className="space-y-4">
         <input
           className="w-full bg-slate-900/70 border border-slate-700 px-3 py-2 rounded-xl"
@@ -85,7 +83,7 @@ export default function RocolaForm({ slug }) {
 
         <input
           className="w-full bg-slate-900/70 border border-slate-700 px-3 py-2 rounded-xl"
-          placeholder="Mesa (opcional)"
+          placeholder="Mesa"
           value={table}
           onChange={(e) => setTable(e.target.value)}
         />
@@ -98,7 +96,6 @@ export default function RocolaForm({ slug }) {
         />
       </div>
 
-      {/* SUBMIT */}
       <button
         onClick={requestSong}
         disabled={loading}
