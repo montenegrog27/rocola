@@ -1,3 +1,6 @@
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 import { dbAdmin } from "@/lib/firebaseAdmin";
 import { getAccessToken, spotifyFetch } from "@/lib/spotifyServer";
 import admin from "firebase-admin";
