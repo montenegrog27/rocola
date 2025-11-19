@@ -1,4 +1,5 @@
 
+export const dynamic = "force-dynamic";
 export async function GET() {
   const params = new URLSearchParams({
     response_type: "code",

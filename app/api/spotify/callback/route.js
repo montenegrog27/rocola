@@ -1,5 +1,6 @@
 import { dbAdmin } from "@/lib/firebaseAdmin";
 import qs from "querystring";
+export const dynamic = "force-dynamic";
 
 export async function GET(req) {
   try {
